@@ -47,6 +47,9 @@
                 <span class="stat-item">
                   <span class="icon">💬</span> {{ post.comments_count || 0 }}
                 </span>
+                <span class="stat-item">
+                  <span class="icon">👍</span> {{ post.likes_count || 0 }}
+                </span>
               </div>
             </div>
           </div>

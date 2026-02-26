@@ -1,12 +1,16 @@
 <template>
   <div class="layout">
     <header class="header">
+      <!-- 注意：如果你希望头部也左右顶到头，请同样移除这里的 container 类 -->
       <div class="container header-container">
         <div class="logo">
           <router-link to="/">TFMS Forum</router-link>
         </div>
-        
+
         <div class="header-actions">
+          <button @click="toggleTheme" class="theme-toggle-btn" title="切换主题">
+            {{ isDarkTheme ? '☀️' : '🌙' }}
+          </button>
           <div class="user-info" v-if="isAuthenticated">
             <router-link to="/profile" class="username" title="个人信息">
               {{ user?.username }}
@@ -23,8 +27,9 @@
         </div>
       </div>
     </header>
-    
-    <div class="container main-container">
+
+    <!-- 修改点1：移除了 'container' 类，只保留 main-container -->
+    <div class="main-container">
       <aside class="left-sidebar">
         <div class="sidebar-card">
           <h3 class="sidebar-title">分类</h3>
@@ -41,7 +46,7 @@
             </li>
           </ul>
         </div>
-        
+
         <div class="user-actions" v-if="isAuthenticated">
           <router-link to="/create" class="btn btn-primary btn-block">
             <span class="icon">✏️</span> 发布帖子
@@ -54,11 +59,11 @@
           </router-link>
         </div>
       </aside>
-      
+
       <main class="content">
         <slot></slot>
       </main>
-      
+
       <aside class="right-sidebar">
         <div class="sidebar-card">
           <h3 class="sidebar-title">🔥 热门帖子</h3>
@@ -70,7 +75,7 @@
             </li>
           </ul>
         </div>
-        
+
         <div class="sidebar-card mt-3">
           <h3 class="sidebar-title">🆕 最新发布</h3>
           <ul class="sidebar-post-list">
@@ -83,7 +88,7 @@
         </div>
       </aside>
     </div>
-    
+
     <footer class="footer">
       <div class="container">
         <p>&copy; {{ new Date().getFullYear() }} TFMS Forum. All rights reserved.</p>
@@ -106,10 +111,33 @@ const latestPosts = ref([]);
 const isAuthenticated = ref(false);
 const user = ref(null);
 const isAdmin = ref(false);
+const isDarkTheme = ref(false);
 
 const logout = async () => {
   await store.actions.logout();
   router.push('/');
+};
+
+const toggleTheme = () => {
+  isDarkTheme.value = !isDarkTheme.value;
+  if (isDarkTheme.value) {
+    document.body.classList.add('dark');
+    localStorage.setItem('theme', 'dark');
+  } else {
+    document.body.classList.remove('dark');
+    localStorage.setItem('theme', 'light');
+  }
+};
+
+const initTheme = () => {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    isDarkTheme.value = true;
+    document.body.classList.add('dark');
+  } else {
+    isDarkTheme.value = false;
+    document.body.classList.remove('dark');
+  }
 };
 
 const loadCategories = async () => {
@@ -140,12 +168,15 @@ const loadLatestPosts = async () => {
 };
 
 onMounted(async () => {
+  // 初始化主题
+  initTheme();
+  
   // 加载用户信息
   const userData = await store.actions.getCurrentUser();
   isAuthenticated.value = store.getters.isAuthenticated();
   user.value = store.getters.user();
   isAdmin.value = store.getters.isAdmin();
-  
+
   // 加载分类和帖子
   await loadCategories();
   await loadHotPosts();
@@ -168,7 +199,7 @@ onMounted(async () => {
   top: 0;
   z-index: 100;
   box-shadow: var(--shadow-sm);
-  height: 56px; /* Reduced height */
+  height: 56px;
 }
 
 .header-container {
@@ -179,7 +210,7 @@ onMounted(async () => {
 }
 
 .logo a {
-  font-size: 1.25rem; /* Reduced font size */
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--primary-color);
   text-decoration: none;
@@ -189,23 +220,43 @@ onMounted(async () => {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem; /* Reduced gap */
+  gap: 0.75rem;
+}
+
+.theme-toggle-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 0.25rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.theme-toggle-btn:hover {
+  background-color: var(--bg-body);
+  border-color: var(--text-secondary);
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 0.75rem; /* Reduced gap */
+  gap: 0.75rem;
 }
 
 .username {
   font-weight: 500;
   color: var(--text-primary);
-  font-size: 0.875rem; /* Reduced font size */
+  font-size: 0.875rem;
 }
 
 .notification-link {
-  font-size: 1.125rem; /* Reduced font size */
+  font-size: 1.125rem;
   color: var(--text-secondary);
   transition: color var(--transition-fast);
 }
@@ -216,59 +267,61 @@ onMounted(async () => {
 
 .auth-links {
   display: flex;
-  gap: 0.5rem; /* Reduced gap */
+  gap: 0.5rem;
 }
 
 .btn-sm {
-  padding: 0.25rem 0.625rem; /* Reduced padding */
-  font-size: 0.8125rem; /* Reduced font size */
+  padding: 0.25rem 0.625rem;
+  font-size: 0.8125rem;
 }
 
+/* 修改点2：更新 main-container 样式，确保撑满宽度 */
 .main-container {
   display: flex;
   flex: 1;
-  padding-top: 1.25rem; /* Reduced padding */
-  padding-bottom: 1.25rem; /* Reduced padding */
-  gap: 1.25rem; /* Reduced gap */
+  width: 100%; /* 强制宽度 100% */
+  padding: 1.25rem; /* 添加统一的内边距，防止内容紧贴屏幕边缘 */
+  gap: 1.25rem;
+  box-sizing: border-box; /* 确保 padding 包含在 width 内 */
 }
 
 .left-sidebar {
-  width: 200px; /* Reduced width */
+  width: 200px;
   flex-shrink: 0;
 }
 
 .sidebar-card {
   background-color: var(--bg-card);
   border-radius: var(--border-radius);
-  padding: 1rem; /* Reduced padding */
+  padding: 1rem;
   border: 1px solid var(--border-color);
 }
 
 .sidebar-title {
-  font-size: 0.75rem; /* Reduced font size */
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-light);
-  margin-bottom: 0.75rem; /* Reduced margin */
+  margin-bottom: 0.75rem;
   font-weight: 600;
 }
 
 .category-list {
   display: flex;
   flex-direction: column;
-  gap: 0.125rem; /* Reduced gap */
+  gap: 0.125rem;
 }
 
 .category-link {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Reduced gap */
-  padding: 0.375rem 0.5rem; /* Reduced padding */
+  gap: 0.5rem;
+  padding: 0.375rem 0.5rem;
   border-radius: var(--border-radius);
   color: var(--text-secondary);
   font-weight: 500;
   transition: all var(--transition-fast);
-  font-size: 0.875rem; /* Reduced font size */
+  font-size: 0.875rem;
 }
 
 .category-link:hover {
@@ -282,11 +335,11 @@ onMounted(async () => {
 }
 
 .category-link .icon {
-  font-size: 1rem; /* Reduced font size */
+  font-size: 1rem;
 }
 
 .user-actions {
-  margin-top: 1rem; /* Reduced margin */
+  margin-top: 1rem;
 }
 
 .btn-block {
@@ -300,28 +353,28 @@ onMounted(async () => {
 }
 
 .mt-3 {
-  margin-top: 1rem; /* Reduced margin */
+  margin-top: 1rem;
 }
 
 .content {
   flex: 1;
-  min-width: 0; /* Prevent flex item from overflowing */
+  min-width: 0;
 }
 
 .right-sidebar {
-  width: 240px; /* Reduced width */
+  width: 240px;
   flex-shrink: 0;
 }
 
 .sidebar-post-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem; /* Reduced gap */
+  gap: 0.5rem;
 }
 
 .sidebar-post-item {
   border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0.5rem; /* Reduced padding */
+  padding-bottom: 0.5rem;
 }
 
 .sidebar-post-item:last-child {
@@ -331,7 +384,7 @@ onMounted(async () => {
 
 .sidebar-post-link {
   color: var(--text-primary);
-  font-size: 0.8125rem; /* Reduced font size */
+  font-size: 0.8125rem;
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -347,11 +400,11 @@ onMounted(async () => {
 .footer {
   background-color: var(--bg-card);
   border-top: 1px solid var(--border-color);
-  padding: 1rem 0; /* Reduced padding */
+  padding: 1rem 0;
   margin-top: auto;
   text-align: center;
   color: var(--text-light);
-  font-size: 0.75rem; /* Reduced font size */
+  font-size: 0.75rem;
 }
 
 @media (max-width: 1024px) {

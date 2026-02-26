@@ -55,4 +55,12 @@ export const adminApi = {
   deleteUser: (userId) => api.delete(`/admin/users/${userId}`)
 };
 
+// 点赞相关接口
+export const likesApi = {
+  likePost: (postId) => api.post(`/posts/${postId}/like`),
+  unlikePost: (postId) => api.delete(`/posts/${postId}/like`),
+  likeComment: (commentId) => api.post(`/comments/${commentId}/like`),
+  unlikeComment: (commentId) => api.delete(`/comments/${commentId}/like`)
+};
+
 export default api;

@@ -7,6 +7,16 @@
         <span class="category">{{ post.category_name }}</span>
         <span class="date">{{ formatDate(post.created_at) }}</span>
         <span class="status" :class="post.status">{{ statusText }}</span>
+        <span class="views">👁️ {{ post.views || 0 }}</span>
+        <span class="comments-count">💬 {{ post.comments_count || 0 }}</span>
+        <button 
+          v-if="isAuthenticated" 
+          @click="togglePostLike" 
+          class="like-btn"
+          :class="{ 'liked': post.is_liked }"
+        >
+          {{ post.is_liked ? '❤️' : '🤍' }} {{ post.likes_count || 0 }}
+        </button>
       </div>
       
       <div class="post-content" v-html="renderedContent"></div>
@@ -16,6 +26,7 @@
         
         <div class="comment-form" v-if="isAuthenticated">
           <textarea 
+            class="comment-input"
             v-model="commentContent" 
             placeholder="写下你的评论..."
             rows="4"
@@ -28,6 +39,14 @@
             <div class="comment-header">
               <span class="comment-author">{{ comment.author_username }}</span>
               <span class="comment-date">{{ formatDate(comment.created_at) }}</span>
+              <button 
+                v-if="isAuthenticated" 
+                @click="toggleCommentLike(comment.id)" 
+                class="comment-like-btn"
+                :class="{ 'liked': comment.is_liked }"
+              >
+                {{ comment.is_liked ? '❤️' : '🤍' }} {{ comment.likes_count || 0 }}
+              </button>
             </div>
             <div class="comment-content">{{ comment.content }}</div>
           </div>
@@ -39,11 +58,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { marked } from 'marked';
 import Layout from '../components/Layout/Layout.vue';
-import { postApi, commentApi } from '../api';
+import { postApi, commentApi, likesApi } from '../api';
 import store from '../store';
 
 const route = useRoute();
@@ -101,6 +120,42 @@ const submitComment = async () => {
   }
 };
 
+const togglePostLike = async () => {
+  const postId = route.params.id;
+  try {
+    if (post.value.is_liked) {
+      await likesApi.unlikePost(postId);
+      post.value.is_liked = false;
+      post.value.likes_count = Math.max(0, (post.value.likes_count || 0) - 1);
+    } else {
+      await likesApi.likePost(postId);
+      post.value.is_liked = true;
+      post.value.likes_count = (post.value.likes_count || 0) + 1;
+    }
+  } catch (error) {
+    console.error('点赞操作失败:', error);
+  }
+};
+
+const toggleCommentLike = async (commentId) => {
+  try {
+    const comment = comments.value.find(c => c.id === commentId);
+    if (!comment) return;
+    
+    if (comment.is_liked) {
+      await likesApi.unlikeComment(commentId);
+      comment.is_liked = false;
+      comment.likes_count = Math.max(0, (comment.likes_count || 0) - 1);
+    } else {
+      await likesApi.likeComment(commentId);
+      comment.is_liked = true;
+      comment.likes_count = (comment.likes_count || 0) + 1;
+    }
+  } catch (error) {
+    console.error('点赞操作失败:', error);
+  }
+};
+
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleString();
@@ -109,6 +164,13 @@ const formatDate = (dateString) => {
 onMounted(async () => {
   await loadPost();
   await loadComments();
+});
+
+watch(() => route.params.id, async (newId) => {
+  if (newId) {
+    await loadPost();
+    await loadComments();
+  }
 });
 </script>
 
@@ -121,8 +183,28 @@ onMounted(async () => {
   display: flex;
   gap: 1rem;
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.like-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.like-btn:hover {
+  background-color: var(--bg-card);
+}
+
+.like-btn.liked {
+  background-color: var(--bg-card);
+  border-color: var(--primary-color);
 }
 
 .status {
@@ -133,17 +215,17 @@ onMounted(async () => {
 
 .status.pending {
   background-color: #ffc107;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .status.approved {
   background-color: #28a745;
-  color: white;
+  color: var(--text-primary);
 }
 
 .status.rejected {
   background-color: #dc3545;
-  color: white;
+  color: var(--text-primary);
 }
 
 .post-content {
@@ -161,13 +243,13 @@ onMounted(async () => {
 }
 
 .post-content code {
-  background-color: #f5f5f5;
+  background-color: var(--bg-card);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
 }
 
 .post-content pre {
-  background-color: #f5f5f5;
+  background-color: var(--bg-card);
   padding: 1rem;
   border-radius: 4px;
   overflow-x: auto;
@@ -190,7 +272,7 @@ onMounted(async () => {
 .comment-form textarea {
   width: 100%;
   padding: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   resize: vertical;
   margin-bottom: 1rem;
@@ -198,7 +280,7 @@ onMounted(async () => {
 
 .submit-btn {
   background-color: #4CAF50;
-  color: white;
+  color: var(--bg-card);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 4px;
@@ -213,16 +295,42 @@ onMounted(async () => {
 
 .comment-item {
   padding: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
+}
+
+.comment-input {
+  color: var(--text-primary);
+  background-color: var(--bg-card);
 }
 
 .comment-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 0.5rem;
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
+}
+
+.comment-like-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.comment-like-btn:hover {
+  background-color: var(--bg-card);
+}
+
+.comment-like-btn.liked {
+  background-color: var(--bg-card);
+  border-color: var(--primary-color);
 }
 
 .comment-content {
@@ -233,6 +341,6 @@ onMounted(async () => {
   text-align: center;
   padding: 2rem;
   font-size: 1.125rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 </style>

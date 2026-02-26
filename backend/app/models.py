@@ -49,7 +49,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     content_markdown = db.Column(db.Text, nullable=False)
-    content_excerpt = db.Column(db.String(300))
+    content_excerpt = db.Column(db.Text)
 
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id"), nullable=False)
@@ -69,6 +69,7 @@ class Post(db.Model):
     author = db.relationship("User", back_populates="posts")
     category = db.relationship("Category", back_populates="posts")
     comments = db.relationship("Comment", back_populates="post", lazy="dynamic")
+    likes = db.relationship("PostLike", back_populates="post", lazy="dynamic")
 
 
 class Comment(db.Model):
@@ -85,6 +86,7 @@ class Comment(db.Model):
 
     post = db.relationship("Post", back_populates="comments")
     author = db.relationship("User", back_populates="comments")
+    likes = db.relationship("CommentLike", back_populates="comment", lazy="dynamic")
 
 
 class Notification(db.Model):
@@ -98,4 +100,28 @@ class Notification(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     user = db.relationship("User", back_populates="notifications")
+
+
+class PostLike(db.Model):
+    __tablename__ = "post_likes"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey("posts.id"), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    user = db.relationship("User")
+    post = db.relationship("Post", back_populates="likes")
+
+
+class CommentLike(db.Model):
+    __tablename__ = "comment_likes"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    comment_id = db.Column(db.Integer, db.ForeignKey("comments.id"), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    user = db.relationship("User")
+    comment = db.relationship("Comment", back_populates="likes")
 

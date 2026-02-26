@@ -118,7 +118,7 @@ onMounted(() => {
 
 .post-item {
   padding: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   transition: all 0.3s ease;
 }
@@ -134,7 +134,7 @@ onMounted(() => {
 }
 
 .post-item h2 a {
-  color: #333;
+  color: var(--text-primary);
   text-decoration: none;
 }
 
@@ -146,12 +146,12 @@ onMounted(() => {
   display: flex;
   gap: 1rem;
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 0.5rem;
 }
 
 .post-excerpt {
-  color: #555;
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
@@ -165,8 +165,8 @@ onMounted(() => {
 
 .pagination button {
   padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
-  background-color: white;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
   border-radius: 4px;
   cursor: pointer;
 }

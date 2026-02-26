@@ -4,7 +4,7 @@
       <h1>发布帖子</h1>
       
       <form @submit.prevent="submitPost" class="post-form">
-        <div class="form-group">
+        <div class="form-group text-primary">
           <label for="title">标题</label>
           <input 
             type="text" 
@@ -140,16 +140,27 @@ onMounted(() => {
 
 .form-group label {
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
   font-size: 1rem;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .form-group textarea {
@@ -171,15 +182,16 @@ onMounted(() => {
 .preview {
   flex: 1;
   padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #f9f9f9;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--bg-card);
   min-height: 300px;
 }
 
 .preview h3 {
   margin-top: 0;
   margin-bottom: 1rem;
+  color: var(--text-primary);
 }
 
 .editor-toggle {
@@ -187,40 +199,47 @@ onMounted(() => {
 }
 
 .editor-toggle button {
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
   padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   cursor: pointer;
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+
+.editor-toggle button:hover {
+  background-color: var(--bg-body);
+  border-color: var(--text-secondary);
 }
 
 .submit-btn {
-  background-color: #4CAF50;
+  background-color: var(--success-color);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color var(--transition-fast);
 }
 
 .submit-btn:hover {
-  background-color: #45a049;
+  opacity: 0.9;
 }
 
 .submit-btn:disabled {
-  background-color: #cccccc;
+  background-color: var(--text-light);
   cursor: not-allowed;
 }
 
 .success-message {
   margin-top: 1rem;
   padding: 1rem;
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-  border-radius: 4px;
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--success-color);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--border-radius);
   text-align: center;
 }
 </style>

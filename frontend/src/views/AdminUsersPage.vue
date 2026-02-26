@@ -259,7 +259,7 @@ export default {
 }
 
 .user-management {
-  background-color: #fff;
+  background-color: var(--bg-card);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -273,16 +273,16 @@ export default {
 .user-table th, .user-table td {
   padding: 12px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .user-table th {
-  background-color: #f5f5f5;
+  background-color: var(--bg-card);
   font-weight: bold;
 }
 
 .user-table tr:hover {
-  background-color: #f9f9f9;
+  background-color: var(--hover-color);
 }
 
 .btn {
@@ -296,7 +296,7 @@ export default {
 
 .btn-primary {
   background-color: #4CAF50;
-  color: white;
+  color: var(--text-color);
 }
 
 .btn-primary:hover {
@@ -305,7 +305,7 @@ export default {
 
 .btn-danger {
   background-color: #f44336;
-  color: white;
+  color: var(--text-color);
 }
 
 .btn-danger:hover {
@@ -313,12 +313,12 @@ export default {
 }
 
 .btn-secondary {
-  background-color: #e7e7e7;
-  color: black;
+  background-color: var(--bg-button);
+  color: var(--text-color);
 }
 
 .btn-secondary:hover {
-  background-color: #ddd;
+  background-color: var(--hover-color);
 }
 
 .btn-sm {
@@ -340,7 +340,7 @@ export default {
 }
 
 .modal {
-  background-color: white;
+  background-color: var(--bg-card);
   padding: 20px;
   border-radius: 8px;
   width: 400px;
