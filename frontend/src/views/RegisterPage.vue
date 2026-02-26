@@ -32,6 +32,39 @@
         </div>
         
         <div class="form-group">
+          <label for="real_name" class="form-label">真实姓名</label>
+          <input 
+            type="text" 
+            id="real_name" 
+            v-model="formData.real_name"
+            class="input-field"
+            placeholder="请输入真实姓名"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="student_id" class="form-label">学号</label>
+          <input 
+            type="text" 
+            id="student_id" 
+            v-model="formData.student_id"
+            class="input-field"
+            placeholder="请输入学号"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="admission_year" class="form-label">入学年份</label>
+          <input 
+            type="number" 
+            id="admission_year" 
+            v-model="formData.admission_year"
+            class="input-field"
+            placeholder="请输入入学年份"
+          >
+        </div>
+        
+        <div class="form-group">
           <label for="password" class="form-label">密码</label>
           <input 
             type="password" 
@@ -71,6 +104,9 @@ const error = ref('');
 const formData = ref({
   username: '',
   email: '',
+  real_name: '',
+  student_id: '',
+  admission_year: null,
   password: ''
 });
 

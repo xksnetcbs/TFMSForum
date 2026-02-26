@@ -40,6 +40,11 @@ const routes = [
     path: '/notifications',
     name: 'Notifications',
     component: () => import('../views/NotificationPage.vue')
+  },
+  {
+    path: '/profile',
+    name: 'UserProfile',
+    component: () => import('../views/UserProfilePage.vue')
   }
 ];
 

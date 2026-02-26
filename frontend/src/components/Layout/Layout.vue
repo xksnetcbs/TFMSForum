@@ -8,7 +8,9 @@
         
         <div class="header-actions">
           <div class="user-info" v-if="isAuthenticated">
-            <span class="username">{{ user?.username }}</span>
+            <router-link to="/profile" class="username" title="个人信息">
+              {{ user?.username }}
+            </router-link>
             <router-link to="/notifications" class="notification-link" title="通知">
               <span class="icon">🔔</span>
             </router-link>

@@ -30,6 +30,9 @@ def register():
     username = data.get('username')
     email = data.get('email')
     password = data.get('password')
+    real_name = data.get('real_name')
+    student_id = data.get('student_id')
+    admission_year = data.get('admission_year')
 
     if not username or not email or not password:
         return jsonify({'error': '缺少必要参数'}), 400
@@ -44,7 +47,10 @@ def register():
     user = User(
         username=username,
         email=email,
-        password_hash=password_hash
+        password_hash=password_hash,
+        real_name=real_name,
+        student_id=student_id,
+        admission_year=admission_year
     )
 
     db.session.add(user)
@@ -55,6 +61,9 @@ def register():
         'id': user.id,
         'username': user.username,
         'email': user.email,
+        'real_name': user.real_name,
+        'student_id': user.student_id,
+        'admission_year': user.admission_year,
         'is_admin': user.is_admin
     })
 
@@ -81,6 +90,9 @@ def login():
         'id': user.id,
         'username': user.username,
         'email': user.email,
+        'real_name': user.real_name,
+        'student_id': user.student_id,
+        'admission_year': user.admission_year,
         'is_admin': user.is_admin
     })
 
@@ -103,5 +115,41 @@ def get_current_user():
         'id': user.id,
         'username': user.username,
         'email': user.email,
+        'real_name': user.real_name,
+        'student_id': user.student_id,
+        'admission_year': user.admission_year,
+        'is_admin': user.is_admin
+    })
+
+@auth_bp.route('/me', methods=['PUT'])
+@login_required
+def update_user_info():
+    data = request.json
+    real_name = data.get('real_name')
+    student_id = data.get('student_id')
+    admission_year = data.get('admission_year')
+
+    user = User.query.get(session['user_id'])
+    if not user:
+        session.pop('user_id', None)
+        return jsonify({'error': '用户不存在'}), 401
+
+    # 更新用户信息
+    if real_name is not None:
+        user.real_name = real_name
+    if student_id is not None:
+        user.student_id = student_id
+    if admission_year is not None:
+        user.admission_year = admission_year
+
+    db.session.commit()
+
+    return jsonify({
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'real_name': user.real_name,
+        'student_id': user.student_id,
+        'admission_year': user.admission_year,
         'is_admin': user.is_admin
     })
