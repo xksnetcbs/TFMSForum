@@ -45,4 +45,14 @@ export const categoryApi = {
   getList: () => api.get('/categories')
 };
 
+// 管理员相关接口
+export const adminApi = {
+  getPendingPosts: () => api.get('/admin/posts/pending'),
+  approvePost: (postId) => api.post(`/admin/posts/${postId}/approve`),
+  rejectPost: (postId, reason) => api.post(`/admin/posts/${postId}/reject`, { reason }),
+  getUsers: () => api.get('/admin/users'),
+  updateUser: (userId, data) => api.put(`/admin/users/${userId}`, data),
+  deleteUser: (userId) => api.delete(`/admin/users/${userId}`)
+};
+
 export default api;

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.models import Post
+from app.models import Post, User
 from app.services.post_service import approve_post, reject_post
 from .auth import admin_required
 
@@ -53,3 +53,63 @@ def reject_post_api(post_id):
         'title': post.title,
         'status': post.status
     })
+
+@admin_bp.route('/users', methods=['GET'])
+@admin_required
+def get_users():
+    users = User.query.order_by(User.id).all()
+    
+    users_data = []
+    for user in users:
+        users_data.append({
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'real_name': user.real_name,
+            'student_id': user.student_id,
+            'admission_year': user.admission_year,
+            'is_admin': user.is_admin,
+            'created_at': user.created_at.isoformat()
+        })
+    
+    return jsonify(users_data)
+
+@admin_bp.route('/users/<int:user_id>', methods=['PUT'])
+@admin_required
+def update_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': '用户不存在'}), 404
+    
+    data = request.json
+    user.real_name = data.get('real_name', user.real_name)
+    user.student_id = data.get('student_id', user.student_id)
+    user.admission_year = data.get('admission_year', user.admission_year)
+    user.is_admin = data.get('is_admin', user.is_admin)
+    
+    from app import db
+    db.session.commit()
+    
+    return jsonify({
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'real_name': user.real_name,
+        'student_id': user.student_id,
+        'admission_year': user.admission_year,
+        'is_admin': user.is_admin
+    })
+
+@admin_bp.route('/users/<int:user_id>', methods=['DELETE'])
+@admin_required
+def delete_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': '用户不存在'}), 404
+    
+    from app import db
+    db.session.delete(user)
+    db.session.commit()
+    
+    return jsonify({'message': '用户已删除'})
+

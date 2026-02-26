@@ -49,6 +49,9 @@
           <router-link to="/admin/review" class="btn btn-secondary btn-block mt-2" v-if="isAdmin">
             <span class="icon">🛡️</span> 审核管理
           </router-link>
+          <router-link to="/admin/users" class="btn btn-secondary btn-block mt-2" v-if="isAdmin">
+            <span class="icon">👥</span> 用户管理
+          </router-link>
         </div>
       </aside>
       
