@@ -42,7 +42,10 @@ export const notificationApi = {
 
 // 分类相关接口
 export const categoryApi = {
-  getList: () => api.get('/categories')
+  getList: () => api.get('/categories'),
+  create: (data) => api.post('/categories', data),
+  update: (id, data) => api.put(`/categories/${id}`, data),
+  delete: (id) => api.delete(`/categories/${id}`)
 };
 
 // 管理员相关接口

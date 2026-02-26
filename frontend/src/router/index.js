@@ -50,6 +50,11 @@ const routes = [
     path: '/admin/users',
     name: 'AdminUsers',
     component: () => import('../views/AdminUsersPage.vue')
+  },
+  {
+    path: '/admin/categories',
+    name: 'AdminCategories',
+    component: () => import('../views/AdminCategoriesPage.vue')
   }
 ];
 
