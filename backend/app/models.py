@@ -64,6 +64,7 @@ class Post(db.Model):
     updated_at = db.Column(
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
     )
+    views = db.Column(db.Integer, default=0, nullable=False)
 
     author = db.relationship("User", back_populates="posts")
     category = db.relationship("Category", back_populates="posts")

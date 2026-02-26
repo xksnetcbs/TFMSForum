@@ -54,6 +54,8 @@ def get_posts_api():
             'category_id': post.category_id,
             'category_name': post.category.name,
             'status': post.status,
+            'views': post.views,
+            'comments_count': post.comments.count(),
             'created_at': post.created_at.isoformat(),
             'updated_at': post.updated_at.isoformat()
         })
@@ -77,6 +79,11 @@ def get_post_detail(post_id):
     if post.status != PostStatus.APPROVED and not (user_id and (user_id == post.author_id or post.author.is_admin)):
         return jsonify({'error': '无权查看此帖子'}), 403
     
+    # 增加浏览次数
+    post.views += 1
+    from app import db
+    db.session.commit()
+    
     return jsonify({
         'id': post.id,
         'title': post.title,
@@ -86,6 +93,8 @@ def get_post_detail(post_id):
         'category_id': post.category_id,
         'category_name': post.category.name,
         'status': post.status,
+        'views': post.views,
+        'comments_count': post.comments.count(),
         'created_at': post.created_at.isoformat(),
         'updated_at': post.updated_at.isoformat()
     })
