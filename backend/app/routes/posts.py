@@ -57,6 +57,7 @@ def get_posts_api():
             'status': post.status,
             'views': post.views,
             'comments_count': post.comments.count(),
+            'likes_count': post.likes.count(),
             'created_at': post.created_at.isoformat(),
             'updated_at': post.updated_at.isoformat()
         })

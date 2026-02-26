@@ -99,8 +99,9 @@ onMounted(() => {
 }
 
 .mark-all-btn {
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
+  background-color: var(--bg-button);
+  color: var(--text-color-light);
+  border: 1px solid var(--border-color);
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
@@ -114,13 +115,13 @@ onMounted(() => {
 
 .notification-item {
   padding: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   transition: all 0.3s ease;
 }
 
 .notification-item.unread {
-  background-color: #f9f9f9;
+  background-color: var(--bg-card);
   border-left: 4px solid #2196F3;
 }
 
@@ -134,18 +135,18 @@ onMounted(() => {
 .notification-header h3 {
   margin: 0;
   font-size: 1.125rem;
-  color: #333;
+  color: var(--text-color);
 }
 
 .notification-date {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-color);
 }
 
 .notification-content {
   margin-bottom: 1rem;
   line-height: 1.5;
-  color: #555;
+  color: var(--text-color);
 }
 
 .notification-actions {
@@ -156,7 +157,7 @@ onMounted(() => {
 
 .mark-read-btn {
   background-color: #2196F3;
-  color: white;
+  color: var(--text-color-light);
   border: none;
   padding: 0.25rem 0.75rem;
   border-radius: 4px;
@@ -167,7 +168,7 @@ onMounted(() => {
 .empty-message {
   text-align: center;
   padding: 2rem;
-  color: #666;
+  color: var(--text-color);
   font-size: 1.125rem;
 }
 </style>
