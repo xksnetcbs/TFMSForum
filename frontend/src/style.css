@@ -21,8 +21,8 @@
   
   /* Borders */
   --border-color: #e2e8f0;
-  --border-radius: 0.5rem;
-  --border-radius-lg: 0.75rem;
+  --border-radius: 0.375rem; /* Reduced radius */
+  --border-radius-lg: 0.5rem; /* Reduced radius */
   
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -47,9 +47,10 @@ body {
   font-family: var(--font-sans);
   background-color: var(--bg-body);
   color: var(--text-primary);
-  line-height: 1.5;
+  line-height: 1.4; /* Reduced line-height */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 0.9375rem; /* Slightly smaller base font size */
 }
 
 a {
@@ -72,7 +73,8 @@ button {
 h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
 }
 
 ul, ol {
@@ -87,7 +89,7 @@ img {
 
 /* Utility Classes */
 .container {
-  max-width: 1280px;
+  max-width: 1200px; /* Reduced max-width */
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -96,7 +98,7 @@ img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1rem;
+  padding: 0.375rem 0.75rem; /* Reduced padding */
   border-radius: var(--border-radius);
   font-weight: 500;
   transition: all var(--transition-fast);
@@ -142,7 +144,7 @@ img {
 
 .input-field {
   width: 100%;
-  padding: 0.625rem 0.875rem;
+  padding: 0.5rem 0.75rem; /* Reduced padding */
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   background-color: white;
@@ -160,10 +162,11 @@ img {
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.125rem 0.5rem;
+  padding: 0.125rem 0.375rem; /* Reduced padding */
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
+  line-height: 1;
 }
 
 .badge-primary {

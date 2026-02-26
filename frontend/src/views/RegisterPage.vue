@@ -105,70 +105,70 @@ const register = async () => {
 
 .auth-card {
   background-color: var(--bg-card);
-  padding: 2.5rem;
+  padding: 1.5rem; /* Reduced padding */
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-lg);
   width: 100%;
-  max-width: 420px;
+  max-width: 360px; /* Reduced max-width */
   border: 1px solid var(--border-color);
 }
 
 .auth-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem; /* Reduced margin */
 }
 
 .auth-title {
-  font-size: 1.75rem;
+  font-size: 1.25rem; /* Reduced font size */
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem; /* Reduced margin */
 }
 
 .auth-subtitle {
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: 0.8125rem; /* Reduced font size */
 }
 
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem; /* Reduced gap */
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.375rem; /* Reduced gap */
 }
 
 .form-label {
   font-weight: 500;
   color: var(--text-primary);
-  font-size: 0.875rem;
+  font-size: 0.8125rem; /* Reduced font size */
 }
 
 .error-message {
   background-color: #fee2e2;
   color: #b91c1c;
-  padding: 0.75rem;
+  padding: 0.5rem; /* Reduced padding */
   border-radius: var(--border-radius);
-  font-size: 0.875rem;
+  font-size: 0.75rem; /* Reduced font size */
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem; /* Reduced gap */
 }
 
 .btn-block {
   width: 100%;
-  padding: 0.75rem;
-  font-size: 1rem;
+  padding: 0.5rem; /* Reduced padding */
+  font-size: 0.875rem; /* Reduced font size */
 }
 
 .auth-footer {
   text-align: center;
-  margin-top: 1.5rem;
-  font-size: 0.875rem;
+  margin-top: 1rem; /* Reduced margin */
+  font-size: 0.75rem; /* Reduced font size */
   color: var(--text-secondary);
 }
 

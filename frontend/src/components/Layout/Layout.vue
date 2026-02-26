@@ -66,7 +66,7 @@
           </ul>
         </div>
         
-        <div class="sidebar-card mt-4">
+        <div class="sidebar-card mt-3">
           <h3 class="sidebar-title">🆕 最新发布</h3>
           <ul class="sidebar-post-list">
             <li v-for="post in latestPosts" :key="post.id" class="sidebar-post-item">
@@ -163,17 +163,18 @@ onMounted(async () => {
   top: 0;
   z-index: 100;
   box-shadow: var(--shadow-sm);
+  height: 56px; /* Reduced height */
 }
 
 .header-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 64px;
+  height: 100%;
 }
 
 .logo a {
-  font-size: 1.5rem;
+  font-size: 1.25rem; /* Reduced font size */
   font-weight: 700;
   color: var(--primary-color);
   text-decoration: none;
@@ -183,22 +184,23 @@ onMounted(async () => {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem; /* Reduced gap */
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem; /* Reduced gap */
 }
 
 .username {
   font-weight: 500;
   color: var(--text-primary);
+  font-size: 0.875rem; /* Reduced font size */
 }
 
 .notification-link {
-  font-size: 1.25rem;
+  font-size: 1.125rem; /* Reduced font size */
   color: var(--text-secondary);
   transition: color var(--transition-fast);
 }
@@ -209,58 +211,59 @@ onMounted(async () => {
 
 .auth-links {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem; /* Reduced gap */
 }
 
 .btn-sm {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
+  padding: 0.25rem 0.625rem; /* Reduced padding */
+  font-size: 0.8125rem; /* Reduced font size */
 }
 
 .main-container {
   display: flex;
   flex: 1;
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-  gap: 2rem;
+  padding-top: 1.25rem; /* Reduced padding */
+  padding-bottom: 1.25rem; /* Reduced padding */
+  gap: 1.25rem; /* Reduced gap */
 }
 
 .left-sidebar {
-  width: 240px;
+  width: 200px; /* Reduced width */
   flex-shrink: 0;
 }
 
 .sidebar-card {
   background-color: var(--bg-card);
   border-radius: var(--border-radius);
-  padding: 1.25rem;
+  padding: 1rem; /* Reduced padding */
   border: 1px solid var(--border-color);
 }
 
 .sidebar-title {
-  font-size: 0.875rem;
+  font-size: 0.75rem; /* Reduced font size */
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-light);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem; /* Reduced margin */
   font-weight: 600;
 }
 
 .category-list {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.125rem; /* Reduced gap */
 }
 
 .category-link {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.625rem 0.75rem;
+  gap: 0.5rem; /* Reduced gap */
+  padding: 0.375rem 0.5rem; /* Reduced padding */
   border-radius: var(--border-radius);
   color: var(--text-secondary);
   font-weight: 500;
   transition: all var(--transition-fast);
+  font-size: 0.875rem; /* Reduced font size */
 }
 
 .category-link:hover {
@@ -274,11 +277,11 @@ onMounted(async () => {
 }
 
 .category-link .icon {
-  font-size: 1.1rem;
+  font-size: 1rem; /* Reduced font size */
 }
 
 .user-actions {
-  margin-top: 1.5rem;
+  margin-top: 1rem; /* Reduced margin */
 }
 
 .btn-block {
@@ -291,8 +294,8 @@ onMounted(async () => {
   margin-top: 0.5rem;
 }
 
-.mt-4 {
-  margin-top: 1.5rem;
+.mt-3 {
+  margin-top: 1rem; /* Reduced margin */
 }
 
 .content {
@@ -301,19 +304,19 @@ onMounted(async () => {
 }
 
 .right-sidebar {
-  width: 280px;
+  width: 240px; /* Reduced width */
   flex-shrink: 0;
 }
 
 .sidebar-post-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem; /* Reduced gap */
 }
 
 .sidebar-post-item {
   border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.5rem; /* Reduced padding */
 }
 
 .sidebar-post-item:last-child {
@@ -323,8 +326,8 @@ onMounted(async () => {
 
 .sidebar-post-link {
   color: var(--text-primary);
-  font-size: 0.9rem;
-  line-height: 1.4;
+  font-size: 0.8125rem; /* Reduced font size */
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -339,11 +342,11 @@ onMounted(async () => {
 .footer {
   background-color: var(--bg-card);
   border-top: 1px solid var(--border-color);
-  padding: 2rem 0;
+  padding: 1rem 0; /* Reduced padding */
   margin-top: auto;
   text-align: center;
   color: var(--text-light);
-  font-size: 0.875rem;
+  font-size: 0.75rem; /* Reduced font size */
 }
 
 @media (max-width: 1024px) {
@@ -358,7 +361,7 @@ onMounted(async () => {
   .right-sidebar {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    gap: 1rem;
   }
 }
 
