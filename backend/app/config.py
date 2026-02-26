@@ -7,7 +7,7 @@ class Config:
     # MySQL 数据库连接，示例：mysql+pymysql://user:password@localhost:3306/tfms_forum
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "TFMSFORUM_DATABASE_URI",
-        "mysql+pymysql://root:Kumajelly883@localhost:3306/tfms_forum",
+        "mysql+pymysql://tfms_forum:tfmstfms@localhost:3306/tfms_forum",
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

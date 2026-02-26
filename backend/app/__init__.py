@@ -16,7 +16,7 @@ def create_app():
 
     # 初始化扩展
     db.init_app(app)
-    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+    CORS(app, resources={r"/api/*": {"origins": "https://tfms.fback.dcpstudios.top"}}, supports_credentials=True)
 
     # 注册蓝图（后续在各模块中补充）
     from app.routes import register_routes
