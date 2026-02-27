@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 创建 axios 实例
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: 'https://tfms.fback.dcpstudios.top/api',
   timeout: 10000,
   withCredentials: true // 允许携带 Cookie
 });
