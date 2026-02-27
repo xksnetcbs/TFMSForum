@@ -42,7 +42,7 @@
               </div>
               <div class="post-stats">
                 <span class="stat-item">
-                  <span class="icon">👁️</span> {{ post.views || 0 }}
+                  <span class="icon">👀</span> {{ post.views || 0 }}
                 </span>
                 <span class="stat-item">
                   <span class="icon">💬</span> {{ post.comments_count || 0 }}

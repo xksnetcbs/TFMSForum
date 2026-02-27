@@ -38,7 +38,7 @@
         </div>
         
         <div class="form-group">
-          <label for="student_id" class="form-label">学号</label>
+          <label for="student_id" class="form-label">班号学号(例:0106)</label>
           <input 
             type="text" 
             id="student_id" 
