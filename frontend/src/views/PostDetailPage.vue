@@ -17,6 +17,10 @@
         >
           {{ post.is_liked ? '❤️' : '🤍' }} {{ post.likes_count || 0 }}
         </button>
+        <div v-if="isAdmin" class="admin-actions">
+          <button @click="editPost" class="admin-btn edit-btn">编辑</button>
+          <button @click="deletePost" class="admin-btn delete-btn">删除</button>
+        </div>
       </div>
       
       <div class="post-content" v-html="renderedContent"></div>
@@ -53,6 +57,38 @@
         </div>
       </div>
     </div>
+    
+    <!-- 编辑帖子模态框 -->
+    <div v-if="isEditing" class="modal-overlay">
+      <div class="modal-content">
+        <h2>编辑帖子</h2>
+        <div class="form-group">
+          <label>标题</label>
+          <input type="text" v-model="editForm.title" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>内容 (Markdown)</label>
+          <textarea v-model="editForm.content_markdown" class="form-textarea" rows="10"></textarea>
+        </div>
+        <div class="form-group">
+          <label>分类</label>
+          <input type="number" v-model="editForm.category_id" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>状态</label>
+          <select v-model="editForm.status" class="form-select">
+            <option value="pending">待审核</option>
+            <option value="approved">已通过</option>
+            <option value="rejected">已拒绝</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button @click="saveEdit" class="btn save-btn">保存</button>
+          <button @click="cancelEdit" class="btn cancel-btn">取消</button>
+        </div>
+      </div>
+    </div>
+    
     <div class="loading" v-else>加载中...</div>
   </Layout>
 </template>
@@ -71,6 +107,7 @@ const comments = ref([]);
 const commentContent = ref('');
 
 const isAuthenticated = computed(() => store.getters.isAuthenticated());
+const isAdmin = computed(() => store.getters.isAdmin());
 
 const statusText = computed(() => {
   if (!post.value) return '';
@@ -161,6 +198,59 @@ const formatDate = (dateString) => {
   return date.toLocaleString();
 };
 
+// 编辑帖子相关
+const isEditing = ref(false);
+const editForm = ref({
+  title: '',
+  content_markdown: '',
+  category_id: '',
+  status: ''
+});
+
+const deletePost = async () => {
+  if (!confirm('确定要删除这篇帖子吗？')) return;
+  
+  const postId = route.params.id;
+  try {
+    await postApi.delete(postId);
+    alert('帖子删除成功');
+    // 跳转到首页
+    window.location.href = '/';
+  } catch (error) {
+    console.error('删除帖子失败:', error);
+    alert('删除帖子失败');
+  }
+};
+
+const editPost = () => {
+  if (post.value) {
+    editForm.value = {
+      title: post.value.title,
+      content_markdown: post.value.content_markdown,
+      category_id: post.value.category_id,
+      status: post.value.status
+    };
+    isEditing.value = true;
+  }
+};
+
+const saveEdit = async () => {
+  const postId = route.params.id;
+  try {
+    await postApi.update(postId, editForm.value);
+    alert('帖子更新成功');
+    isEditing.value = false;
+    await loadPost();
+  } catch (error) {
+    console.error('更新帖子失败:', error);
+    alert('更新帖子失败');
+  }
+};
+
+const cancelEdit = () => {
+  isEditing.value = false;
+};
+
 onMounted(async () => {
   await loadPost();
   await loadComments();
@@ -175,6 +265,7 @@ watch(() => route.params.id, async (newId) => {
 </script>
 
 <style scoped>
+
 .post-detail-page {
   padding: 1rem;
 }
@@ -186,6 +277,116 @@ watch(() => route.params.id, async (newId) => {
   color: var(--text-secondary);
   margin-bottom: 1.5rem;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.admin-btn {
+  padding: 0.25rem 0.75rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.edit-btn {
+  background-color: #4CAF50;
+  color: var(--bg-card);
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: var(--bg-card);
+}
+
+.admin-btn:hover {
+  opacity: 0.8;
+}
+
+/* 模态框样式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--bg-card);
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.form-textarea {
+  resize: vertical;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.btn {
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.save-btn {
+  background-color: #4CAF50;
+  color: var(--bg-card);
+}
+
+.cancel-btn {
+  background-color: #9e9e9e;
+  color: var(--bg-card);
+}
+
+.btn:hover {
+  opacity: 0.8;
 }
 
 .like-btn {

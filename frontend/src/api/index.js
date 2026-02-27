@@ -23,7 +23,9 @@ export const postApi = {
   getDetail: (id) => api.get(`/posts/${id}`),
   getPending: () => api.get('/admin/posts/pending'),
   approve: (id) => api.post(`/admin/posts/${id}/approve`),
-  reject: (id, reason) => api.post(`/admin/posts/${id}/reject`, { reason })
+  reject: (id, reason) => api.post(`/admin/posts/${id}/reject`, { reason }),
+  delete: (id) => api.delete(`/posts/${id}`),
+  update: (id, data) => api.put(`/posts/${id}`, data)
 };
 
 // 评论相关接口

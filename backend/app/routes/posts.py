@@ -155,3 +155,66 @@ def unlike_post(post_id):
     db.session.commit()
     
     return jsonify({'message': '取消点赞成功'})
+
+@posts_bp.route('/<int:post_id>', methods=['DELETE'])
+@admin_required
+def delete_post(post_id):
+    post = Post.query.get(post_id)
+    if not post:
+        return jsonify({'error': '帖子不存在'}), 404
+    
+    # 先删除相关的点赞记录
+    from app.models import PostLike, Comment, CommentLike
+    PostLike.query.filter_by(post_id=post_id).delete()
+    
+    # 删除相关的评论及其点赞记录
+    comments = Comment.query.filter_by(post_id=post_id).all()
+    for comment in comments:
+        CommentLike.query.filter_by(comment_id=comment.id).delete()
+    Comment.query.filter_by(post_id=post_id).delete()
+    
+    # 删除帖子
+    db.session.delete(post)
+    db.session.commit()
+    
+    return jsonify({'message': '帖子删除成功'})
+
+@posts_bp.route('/<int:post_id>', methods=['PUT'])
+@admin_required
+def update_post(post_id):
+    post = Post.query.get(post_id)
+    if not post:
+        return jsonify({'error': '帖子不存在'}), 404
+    
+    data = request.json
+    title = data.get('title')
+    content_markdown = data.get('content_markdown')
+    category_id = data.get('category_id')
+    status = data.get('status')
+    
+    if title:
+        post.title = title
+    if content_markdown:
+        post.content_markdown = content_markdown
+        # 更新摘要
+        import re
+        plain_text = re.sub(r'[#*`]', '', content_markdown)
+        post.content_excerpt = plain_text[:200] + '...' if len(plain_text) > 200 else plain_text
+    if category_id:
+        post.category_id = category_id
+    if status:
+        post.status = status
+    
+    db.session.commit()
+    
+    return jsonify({
+        'id': post.id,
+        'title': post.title,
+        'content_markdown': post.content_markdown,
+        'content_excerpt': post.content_excerpt,
+        'author_id': post.author_id,
+        'category_id': post.category_id,
+        'status': post.status,
+        'created_at': post.created_at.isoformat(),
+        'updated_at': post.updated_at.isoformat()
+    })

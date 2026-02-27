@@ -68,8 +68,8 @@ class Post(db.Model):
 
     author = db.relationship("User", back_populates="posts")
     category = db.relationship("Category", back_populates="posts")
-    comments = db.relationship("Comment", back_populates="post", lazy="dynamic")
-    likes = db.relationship("PostLike", back_populates="post", lazy="dynamic")
+    comments = db.relationship("Comment", back_populates="post", lazy="dynamic", cascade="all, delete-orphan")
+    likes = db.relationship("PostLike", back_populates="post", lazy="dynamic", cascade="all, delete-orphan")
 
 
 class Comment(db.Model):
@@ -86,7 +86,7 @@ class Comment(db.Model):
 
     post = db.relationship("Post", back_populates="comments")
     author = db.relationship("User", back_populates="comments")
-    likes = db.relationship("CommentLike", back_populates="comment", lazy="dynamic")
+    likes = db.relationship("CommentLike", back_populates="comment", lazy="dynamic", cascade="all, delete-orphan")
 
 
 class Notification(db.Model):
