@@ -11,21 +11,21 @@ posts_bp = Blueprint('posts', __name__, url_prefix='/api/posts')
 def create_post_api():
     data = request.json
     title = data.get('title')
-    content_markdown = data.get('content_markdown')
+    content_html = data.get('content_html')
     category_id = data.get('category_id')
     
-    if not title or not content_markdown or not category_id:
+    if not title or not content_html or not category_id:
         return jsonify({'error': '缺少必要参数'}), 400
     
     from flask import session
     author_id = session['user_id']
     
-    post = create_post(title, content_markdown, category_id, author_id)
+    post = create_post(title, content_html, category_id, author_id)
     
     return jsonify({
         'id': post.id,
         'title': post.title,
-        'content_markdown': post.content_markdown,
+        'content_html': post.content_html,
         'content_excerpt': post.content_excerpt,
         'author_id': post.author_id,
         'category_id': post.category_id,
@@ -99,7 +99,7 @@ def get_post_detail(post_id):
     return jsonify({
         'id': post.id,
         'title': post.title,
-        'content_markdown': post.content_markdown,
+        'content_html': post.content_html,
         'author_id': post.author_id,
         'author_username': post.author.username,
         'category_id': post.category_id,
@@ -188,17 +188,17 @@ def update_post(post_id):
     
     data = request.json
     title = data.get('title')
-    content_markdown = data.get('content_markdown')
+    content_html = data.get('content_html')
     category_id = data.get('category_id')
     status = data.get('status')
     
     if title:
         post.title = title
-    if content_markdown:
-        post.content_markdown = content_markdown
+    if content_html:
+        post.content_html = content_html
         # 更新摘要
         import re
-        plain_text = re.sub(r'[#*`]', '', content_markdown)
+        plain_text = re.sub(r'<[^<]+?>', '', content_html)
         post.content_excerpt = plain_text[:200] + '...' if len(plain_text) > 200 else plain_text
     if category_id:
         post.category_id = category_id
@@ -210,7 +210,7 @@ def update_post(post_id):
     return jsonify({
         'id': post.id,
         'title': post.title,
-        'content_markdown': post.content_markdown,
+        'content_html': post.content_html,
         'content_excerpt': post.content_excerpt,
         'author_id': post.author_id,
         'category_id': post.category_id,

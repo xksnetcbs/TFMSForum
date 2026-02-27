@@ -3,14 +3,16 @@ from app import db
 from .notification_service import send_notification, send_notification_to_admins
 
 
-def create_post(title, content_markdown, category_id, author_id):
+def create_post(title, content_html, category_id, author_id):
     """创建新帖子"""
     # 生成摘要
-    content_excerpt = content_markdown[:300] + ('...' if len(content_markdown) > 300 else '')
+    import re
+    plain_text = re.sub(r'<[^<]+?>', '', content_html)
+    content_excerpt = plain_text[:300] + ('...' if len(plain_text) > 300 else plain_text)
     
     post = Post(
         title=title,
-        content_markdown=content_markdown,
+        content_html=content_html,
         content_excerpt=content_excerpt,
         category_id=category_id,
         author_id=author_id,

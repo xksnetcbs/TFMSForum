@@ -23,7 +23,7 @@
         </div>
       </div>
       
-      <div class="post-content" v-html="renderedContent"></div>
+      <div class="post-content" v-html="post.content_html"></div>
       
       <div class="comments-section">
         <h2>评论</h2>
@@ -67,8 +67,8 @@
           <input type="text" v-model="editForm.title" class="form-input">
         </div>
         <div class="form-group">
-          <label>内容 (Markdown)</label>
-          <textarea v-model="editForm.content_markdown" class="form-textarea" rows="10"></textarea>
+          <label>内容</label>
+          <textarea v-model="editForm.content_html" class="form-textarea" rows="10"></textarea>
         </div>
         <div class="form-group">
           <label>分类</label>
@@ -96,7 +96,6 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { marked } from 'marked';
 import Layout from '../components/Layout/Layout.vue';
 import { postApi, commentApi, likesApi } from '../api';
 import store from '../store';
@@ -117,11 +116,6 @@ const statusText = computed(() => {
     case 'rejected': return '已拒绝';
     default: return '';
   }
-});
-
-const renderedContent = computed(() => {
-  if (!post.value) return '';
-  return marked(post.value.content_markdown);
 });
 
 const loadPost = async () => {
@@ -202,7 +196,7 @@ const formatDate = (dateString) => {
 const isEditing = ref(false);
 const editForm = ref({
   title: '',
-  content_markdown: '',
+  content_html: '',
   category_id: '',
   status: ''
 });
@@ -226,7 +220,7 @@ const editPost = () => {
   if (post.value) {
     editForm.value = {
       title: post.value.title,
-      content_markdown: post.value.content_markdown,
+      content_html: post.value.content_html,
       category_id: post.value.category_id,
       status: post.value.status
     };

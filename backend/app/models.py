@@ -71,6 +71,14 @@ class Post(db.Model):
     comments = db.relationship("Comment", back_populates="post", lazy="dynamic", cascade="all, delete-orphan")
     likes = db.relationship("PostLike", back_populates="post", lazy="dynamic", cascade="all, delete-orphan")
 
+    @property
+    def content_html(self):
+        return self.content_markdown
+
+    @content_html.setter
+    def content_html(self, value):
+        self.content_markdown = value
+
 
 class Comment(db.Model):
     __tablename__ = "comments"
