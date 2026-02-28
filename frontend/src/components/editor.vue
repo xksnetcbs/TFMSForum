@@ -1,15 +1,17 @@
 <template>
    <quill-editor 
       v-model:content="content"
-      :editorOption="editorOption"
+      :options="editorOption"
       contentType="html"
       theme="snow"
+      @ready="onEditorReady"
    ></quill-editor>
 </template>
 
 <script>
 import {QuillEditor} from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
+import api from '../api';
 
 export default {
   components: {QuillEditor},
@@ -26,38 +28,63 @@ export default {
          editorOption: {
             modules: {
                toolbar: [
-                    // 加粗 斜体 下划线 删除线 -----['bold', 'italic', 'underline', 'strike']
-                       ['bold', 'italic', 'underline', 'strike'],
-                        // 引用  代码块-----['blockquote', 'code-block']
-                       ['blockquote', 'code-block'],
-                        // 1、2 级标题-----[{ header: 1 }, { header: 2 }]
-                       [{ header: 1 }, { header: 2 }],
-                        // 有序、无序列表-----[{ list: 'ordered' }, { list: 'bullet' }]
-                       [{ list: 'ordered' }, { list: 'bullet' }],
-                        // 上标/下标-----[{ script: 'sub' }, { script: 'super' }]
-                       [{ script: 'sub' }, { script: 'super' }],
-                        // 缩进-----[{ indent: '-1' }, { indent: '+1' }]
-                       [{ indent: '-1' }, { indent: '+1' }],
-                        // 文本方向-----[{'direction': 'rtl'}]
-                       [{ direction: 'rtl' }],
-                        // 字体大小-----[{ size: ['small', false, 'large', 'huge'] }]
-                       [{ size: ['small', false, 'large', 'huge'] }],
-                        // 标题-----[{ header: [1, 2, 3, 4, 5, 6, false] }]
-                       [{ header: [1, 2, 3, 4, 5, 6, false] }],
-                        // 字体颜色、字体背景颜色-----[{ color: [] }, { background: [] }]
-                       [{ color: [] }, { background: [] }],
-                        // 字体种类-----[{ font: [] }]
-                       [{ font: [] }],
-                        // 对齐方式-----[{ align: [] }]
-                       [{ align: [] }],
-                        // 清除文本格式-----['clean']
-                       ['clean'],
-                        // 链接、图片、视频-----['link', 'image', 'video']
-                       ['image']
-              ]
+                 ['bold', 'italic', 'underline', 'strike'],
+                 ['blockquote', 'code-block'],
+                 [{ 'header': 1 }, { 'header': 2 }],
+                 [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                 [{ 'script': 'sub' }, { 'script': 'super' }],
+                 [{ 'indent': '-1' }, { 'indent': '+1' }],
+                 [{ 'direction': 'rtl' }],
+                 [{ 'size': ['small', false, 'large', 'huge'] }],
+                 [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                 [{ 'color': [] }, { 'background': [] }],
+                 [{ 'font': [] }],
+                 [{ 'align': [] }],
+                 ['clean'],
+                 ['link', 'image']
+               ]
            }
-        }
+        },
+        quill: null
      }
+  },
+  methods: {
+    onEditorReady(quill) {
+      this.quill = quill;
+      // 重写图片处理函数
+      const toolbar = quill.getModule('toolbar');
+      toolbar.addHandler('image', this.handleImageUpload);
+    },
+    handleImageUpload() {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', 'image/*');
+      input.click();
+      
+      input.onchange = async () => {
+        const file = input.files[0];
+        if (file) {
+          try {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const response = await api.post('/upload/image', formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            });
+            
+            if (response.data.url) {
+              const range = this.quill.getSelection();
+              this.quill.insertEmbed(range.index, 'image', response.data.url);
+              this.quill.setSelection(range.index + 1);
+            }
+          } catch (error) {
+            console.error('上传图片失败:', error);
+          }
+        }
+      };
+    }
   },
   watch: {
     modelValue(newVal) {

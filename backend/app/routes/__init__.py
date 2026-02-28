@@ -6,6 +6,7 @@ from .notifications import notifications_bp
 from .categories import categories_bp
 from .admin import admin_bp
 from .likes import likes_bp
+from .upload import upload_bp
 
 
 def register_routes(app: Flask) -> None:
@@ -17,4 +18,5 @@ def register_routes(app: Flask) -> None:
     app.register_blueprint(categories_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(likes_bp)
+    app.register_blueprint(upload_bp)
 
