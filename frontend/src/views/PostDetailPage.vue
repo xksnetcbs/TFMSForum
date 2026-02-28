@@ -68,7 +68,7 @@
         </div>
         <div class="form-group">
           <label>内容</label>
-          <textarea v-model="editForm.content_html" class="form-textarea" rows="10"></textarea>
+          <Editor v-model="editForm.content_html" />
         </div>
         <div class="form-group">
           <label>分类</label>
@@ -96,6 +96,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import Editor from '../components/editor.vue';
 import Layout from '../components/Layout/Layout.vue';
 import { postApi, commentApi, likesApi } from '../api';
 import store from '../store';
@@ -428,22 +429,18 @@ watch(() => route.params.id, async (newId) => {
   line-height: 1.6;
 }
 
-.post-content h2 {
+.post-content :deep(h2) {
   margin-top: 1.5rem;
   margin-bottom: 1rem;
 }
 
-.post-content p {
-  margin-bottom: 1rem;
-}
-
-.post-content code {
+.post-content :deep(code) {
   background-color: var(--bg-card);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
 }
 
-.post-content pre {
+.post-content :deep(pre) {
   background-color: var(--bg-card);
   padding: 1rem;
   border-radius: 4px;
@@ -451,11 +448,75 @@ watch(() => route.params.id, async (newId) => {
   margin-bottom: 1rem;
 }
 
-.post-content pre code {
+.post-content :deep(pre code) {
   background-color: transparent;
   padding: 0;
 }
 
+/* Quill 编辑器生成的列表样式 */
+.post-content :deep(ul) {
+  list-style-type: circle !important;
+}
+.post-content :deep(ol) {
+  margin-bottom: 1rem;
+  padding-left: 0;
+  list-style: decimal !important;
+}
+
+.post-content :deep(ul li),
+.post-content :deep(ol li) {
+  position: relative;
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+/* 有序列表 - 第一级 */
+.post-content :deep(ol) {
+  counter-reset: list-counter-1;
+}
+
+.post-content :deep(ol > li) {
+  counter-increment: list-counter-1;
+}
+
+
+/* Quill 缩进样式 */
+.post-content :deep(.ql-indent-1) {
+  margin-left: 20px;
+}
+
+.post-content :deep(.ql-indent-2) {
+  margin-left: 40px;
+}
+
+.post-content :deep(.ql-indent-3) {
+  margin-left: 60px;
+}
+
+.post-content :deep(.ql-indent-4) {
+  margin-left: 80px;
+}
+
+.post-content :deep(.ql-indent-5) {
+  margin-left: 100px;
+}
+
+/* 嵌套列表样式 */
+.post-content :deep(ul ul),
+.post-content :deep(ol ol),
+.post-content :deep(ul ol),
+.post-content :deep(ol ul) {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.post-content :deep(ul ul li::before) {
+  content: "◦";
+}
+
+.post-content :deep(ul ul ul li::before) {
+  content: "▪";
+}
 .comments-section {
   margin-top: 2rem;
 }

@@ -31,12 +31,7 @@
         
         <div class="form-group">
           <label for="content">内容</label>
-          <QuillEditor
-            v-model:content="formData.content_html"
-            content-type="html"
-            theme="snow"
-            style="min-height: 300px;"
-          />
+          <Editor v-model="formData.content_html" />
         </div>
         
         <button type="submit" class="submit-btn" :disabled="loading">
@@ -54,8 +49,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { QuillEditor } from '@vueup/vue-quill';
-import '@vueup/vue-quill/dist/vue-quill.snow.css';
+import Editor from '../components/editor.vue';
 import Layout from '../components/Layout/Layout.vue';
 import { postApi, categoryApi } from '../api';
 
