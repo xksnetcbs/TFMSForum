@@ -54,6 +54,9 @@ export default {
       // 重写图片处理函数
       const toolbar = quill.getModule('toolbar');
       toolbar.addHandler('image', this.handleImageUpload);
+      
+      // 添加粘贴事件监听
+      quill.root.addEventListener('paste', this.handlePaste);
     },
     handleImageUpload() {
       const input = document.createElement('input');
@@ -64,26 +67,44 @@ export default {
       input.onchange = async () => {
         const file = input.files[0];
         if (file) {
-          try {
-            const formData = new FormData();
-            formData.append('file', file);
-            
-            const response = await api.post('/upload/image', formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
-            });
-            
-            if (response.data.url) {
-              const range = this.quill.getSelection();
-              this.quill.insertEmbed(range.index, 'image', response.data.url);
-              this.quill.setSelection(range.index + 1);
-            }
-          } catch (error) {
-            console.error('上传图片失败:', error);
-          }
+          await this.uploadImage(file);
         }
       };
+    },
+    handlePaste(event) {
+      const clipboardData = event.clipboardData || window.clipboardData;
+      const items = clipboardData.items;
+      
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          event.preventDefault();
+          const file = items[i].getAsFile();
+          if (file) {
+            this.uploadImage(file);
+          }
+          break;
+        }
+      }
+    },
+    async uploadImage(file) {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await api.post('/upload/image', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        
+        if (response.data.url) {
+          const range = this.quill.getSelection();
+          this.quill.insertEmbed(range.index, 'image', response.data.url);
+          this.quill.setSelection(range.index + 1);
+        }
+      } catch (error) {
+        console.error('上传图片失败:', error);
+      }
     }
   },
   watch: {
