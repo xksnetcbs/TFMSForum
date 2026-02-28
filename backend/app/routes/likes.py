@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.models import PostLike, CommentLike, Post, Comment
 from app import db
+from app.log import log
 from .auth import login_required
 
 likes_bp = Blueprint('likes', __name__, url_prefix='/api')
@@ -27,7 +28,9 @@ def like_post(post_id):
     
     # 返回点赞数
     likes_count = PostLike.query.filter_by(post_id=post_id).count()
-    
+
+    log(f'用户id: {user_id} 点赞了帖子 {post_id}: {post.title}')
+
     return jsonify({
         'message': '点赞成功',
         'likes_count': likes_count
@@ -53,7 +56,9 @@ def unlike_post(post_id):
     
     # 返回点赞数
     likes_count = PostLike.query.filter_by(post_id=post_id).count()
-    
+
+    log(f'用户id: {user_id} 取消点赞了帖子 {post_id}: {post.title}')
+
     return jsonify({
         'message': '取消点赞成功',
         'likes_count': likes_count

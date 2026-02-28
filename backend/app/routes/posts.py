@@ -3,6 +3,7 @@ from app.models import Post, PostStatus, PostLike
 from app.services.post_service import create_post, approve_post, reject_post, get_posts
 from .auth import login_required, admin_required
 from app import db
+from app.log import log
 
 posts_bp = Blueprint('posts', __name__, url_prefix='/api/posts')
 
@@ -21,7 +22,9 @@ def create_post_api():
     author_id = session['user_id']
     
     post = create_post(title, content_html, category_id, author_id)
-    
+
+    log(f'用户{session["user_id"]}创建了帖子：{title}')
+
     return jsonify({
         'id': post.id,
         'title': post.title,
@@ -132,7 +135,9 @@ def like_post(post_id):
     new_like = PostLike(user_id=user_id, post_id=post_id)
     db.session.add(new_like)
     db.session.commit()
-    
+
+    log(f'用户{session["user_id"]}点赞了帖子：{post.title}')
+
     return jsonify({'message': '点赞成功'})
 
 @posts_bp.route('/<int:post_id>/like', methods=['DELETE'])
@@ -153,7 +158,9 @@ def unlike_post(post_id):
     # 删除点赞记录
     db.session.delete(existing_like)
     db.session.commit()
-    
+
+    log(f'用户{session["user_id"]}取消点赞了帖子：{post.title}')
+
     return jsonify({'message': '取消点赞成功'})
 
 @posts_bp.route('/<int:post_id>', methods=['DELETE'])
@@ -176,7 +183,9 @@ def delete_post(post_id):
     # 删除帖子
     db.session.delete(post)
     db.session.commit()
-    
+
+    log(f'管理员删除了帖子：{post.title}')
+
     return jsonify({'message': '帖子删除成功'})
 
 @posts_bp.route('/<int:post_id>', methods=['PUT'])
@@ -206,7 +215,9 @@ def update_post(post_id):
         post.status = status
     
     db.session.commit()
-    
+
+    log(f'管理员更新了帖子：{post.title}')
+
     return jsonify({
         'id': post.id,
         'title': post.title,

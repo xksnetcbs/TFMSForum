@@ -1,5 +1,6 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from app.models import Post, User
+from app.log import log
 from app.services.post_service import approve_post, reject_post
 from .auth import admin_required
 
@@ -31,7 +32,9 @@ def approve_post_api(post_id):
     post = approve_post(post_id)
     if not post:
         return jsonify({'error': '帖子不存在'}), 404
-    
+
+    log(f'用户 {post.author.username} 的帖子 {post.title} (id:{post.id}) 已通过审核，执行者：{session.get("username")}')
+
     return jsonify({
         'id': post.id,
         'title': post.title,
@@ -47,6 +50,8 @@ def reject_post_api(post_id):
     post = reject_post(post_id, reason)
     if not post:
         return jsonify({'error': '帖子不存在'}), 404
+
+    log(f'用户 {post.author.username} 的帖子 {post.title} (id:{post.id}) 未通过审核，原因：{reason}，执行者：{session.get("username")}')
     
     return jsonify({
         'id': post.id,
@@ -89,6 +94,8 @@ def update_user(user_id):
     
     from app import db
     db.session.commit()
+
+    log(f'用户 {user.username} 的信息已更新，执行者：{session.get("username")}')
     
     return jsonify({
         'id': user.id,
@@ -110,6 +117,8 @@ def delete_user(user_id):
     from app import db
     db.session.delete(user)
     db.session.commit()
+
+    log(f'用户 {user.username} 已删除，执行者：{session.get("username")}')
     
     return jsonify({'message': '用户已删除'})
 

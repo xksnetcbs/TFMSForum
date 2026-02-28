@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User
+from app.log import log
 from app import db
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
@@ -57,6 +58,9 @@ def register():
     db.session.commit()
 
     session['user_id'] = user.id
+
+    log(f'用户 {username} 注册成功')
+
     return jsonify({
         'id': user.id,
         'username': user.username,
@@ -86,6 +90,9 @@ def login():
         return jsonify({'error': '用户名/邮箱或密码错误'}), 401
 
     session['user_id'] = user.id
+
+    log(f'用户 {user.username} 上线了')
+
     return jsonify({
         'id': user.id,
         'username': user.username,

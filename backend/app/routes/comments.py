@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.models import Comment, CommentLike, User
 from app import db
+from app.log import log
 from .auth import login_required
 
 comments_bp = Blueprint('comments', __name__, url_prefix='/api')
@@ -56,7 +57,9 @@ def create_comment(post_id):
     
     db.session.add(comment)
     db.session.commit()
-    
+
+    log(f'用户{author_id}创建了评论{comment.id}:, {comment.content}')
+
     return jsonify({
         'id': comment.id,
         'post_id': comment.post_id,
@@ -85,6 +88,8 @@ def delete_comment(comment_id):
     
     db.session.delete(comment)
     db.session.commit()
+
+    log(f'用户id: {user_id}删除了评论id: {comment_id}: {comment.content}')
     
     return jsonify({'message': '评论删除成功'})
 
@@ -107,7 +112,9 @@ def like_comment(comment_id):
     new_like = CommentLike(user_id=user_id, comment_id=comment_id)
     db.session.add(new_like)
     db.session.commit()
-    
+
+    log(f'用户id: {user_id}点赞了评论id: {comment_id}: {comment.content}')
+
     return jsonify({'message': '点赞成功'})
 
 @comments_bp.route('/comments/<int:comment_id>/like', methods=['DELETE'])
@@ -128,5 +135,7 @@ def unlike_comment(comment_id):
     # 删除点赞记录
     db.session.delete(existing_like)
     db.session.commit()
+
+    log(f'用户id: {user_id}取消点赞了评论id: {comment_id}: {comment.content}')
     
     return jsonify({'message': '取消点赞成功'})

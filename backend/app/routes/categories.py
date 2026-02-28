@@ -1,5 +1,6 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from app.models import Category
+from app.log import log
 from .auth import login_required, admin_required
 from app import db
 
@@ -43,7 +44,9 @@ def create_category():
     new_category = Category(name=name, slug=slug, order=order)
     db.session.add(new_category)
     db.session.commit()
-    
+
+    log(f'用户 {session["user_id"]} 创建了分类 {new_category.name}')
+
     return jsonify({
         'id': new_category.id,
         'name': new_category.name,
@@ -82,6 +85,8 @@ def update_category(category_id):
         category.order = order
     
     db.session.commit()
+
+    log(f'用户 {session["user_id"]} 更新了分类 {category.name}')
     
     return jsonify({
         'id': category.id,
@@ -104,5 +109,7 @@ def delete_category(category_id):
     
     db.session.delete(category)
     db.session.commit()
+
+    log(f'用户 {session["user_id"]} 删除了分类 {category.name}')
     
     return jsonify({'message': '分类删除成功'})
