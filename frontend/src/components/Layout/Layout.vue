@@ -17,6 +17,7 @@
             </router-link>
             <router-link to="/notifications" class="notification-link" title="通知">
               <span class="icon">🔔</span>
+              <span v-if="unreadCount > 0" class="notification-badge">{{ unreadCount }}</span>
             </router-link>
             <button @click="logout" class="btn btn-secondary btn-sm">登出</button>
           </div>
@@ -104,12 +105,13 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import store from '../../store';
-import { categoryApi, postApi } from '../../api';
+import { categoryApi, postApi, notificationApi } from '../../api';
 
 const router = useRouter();
 const categories = ref([]);
 const hotPosts = ref([]);
 const latestPosts = ref([]);
+const unreadCount = ref(0);
 
 const isAuthenticated = ref(false);
 const user = ref(null);
@@ -170,6 +172,16 @@ const loadLatestPosts = async () => {
   }
 };
 
+const loadUnreadCount = async () => {
+  if (!isAuthenticated.value) return;
+  try {
+    const response = await notificationApi.getList({ unread: 1 });
+    unreadCount.value = response.data.length;
+  } catch (error) {
+    console.error('加载未读消息数量失败:', error);
+  }
+};
+
 onMounted(async () => {
   // 初始化主题
   initTheme();
@@ -184,6 +196,9 @@ onMounted(async () => {
   await loadCategories();
   await loadHotPosts();
   await loadLatestPosts();
+  
+  // 加载未读消息数量
+  await loadUnreadCount();
 });
 </script>
 
@@ -264,8 +279,30 @@ onMounted(async () => {
   transition: color var(--transition-fast);
 }
 
+.notification-link {
+  position: relative;
+}
+
 .notification-link:hover {
   color: var(--primary-color);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .auth-links {

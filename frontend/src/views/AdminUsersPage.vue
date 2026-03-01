@@ -11,9 +11,19 @@
     </div>
     
     <div v-else class="user-management">
+      <div class="user-actions">
+        <button 
+          class="btn btn-info" 
+          @click="openSendMessageModal(selectedUsers)" 
+          :disabled="selectedUsers.length === 0"
+        >
+          向选中用户发送站内信
+        </button>
+      </div>
       <table class="user-table">
         <thead>
           <tr>
+            <th><input type="checkbox" v-model="selectAll" @change="toggleSelectAll"></th>
             <th>ID</th>
             <th>用户名</th>
             <th>邮箱</th>
@@ -27,6 +37,7 @@
         </thead>
         <tbody>
           <tr v-for="user in users" :key="user.id">
+            <td><input type="checkbox" v-model="selectedUsers" :value="user.id"></td>
             <td>{{ user.id }}</td>
             <td>{{ user.username }}</td>
             <td>{{ user.email }}</td>
@@ -53,6 +64,12 @@
                 @click="confirmDelete(user)"
               >
                 删除
+              </button>
+              <button 
+                class="btn btn-info btn-sm" 
+                @click="openSendMessageModal([user.id])"
+              >
+                发站内信
               </button>
             </td>
           </tr>
@@ -119,12 +136,45 @@
         </div>
       </div>
     </div>
+    
+    <!-- 发送站内信模态框 -->
+    <div v-if="showMessageModal" class="modal-overlay" @click="closeMessageModal">
+      <div class="modal" @click.stop>
+        <h2>发送站内信</h2>
+        <form @submit.prevent="sendMessage">
+          <div class="form-group">
+            <label for="message_title">标题</label>
+            <input 
+              type="text" 
+              id="message_title" 
+              v-model="messageForm.title" 
+              class="input-field"
+              required
+            >
+          </div>
+          <div class="form-group">
+            <label for="message_content">内容</label>
+            <textarea 
+              id="message_content" 
+              v-model="messageForm.content" 
+              class="input-field"
+              rows="5"
+              required
+            ></textarea>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" @click="closeMessageModal">取消</button>
+            <button type="submit" class="btn btn-info">发送</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { ref, onMounted } from 'vue';
-import { authApi, adminApi } from '../api';
+import { authApi, adminApi, notificationApi } from '../api';
 
 export default {
   name: 'AdminUsersPage',
@@ -134,8 +184,13 @@ export default {
     const error = ref('');
     const showEditModal = ref(false);
     const showDeleteModal = ref(false);
+    const showMessageModal = ref(false);
     const editingUser = ref({});
     const deletingUser = ref(null);
+    const selectedUsers = ref([]);
+    const selectAll = ref(false);
+    const messageForm = ref({ title: '', content: '' });
+    const messageRecipients = ref([]);
     
     const loadUsers = async () => {
       try {
@@ -210,6 +265,43 @@ export default {
       }
     };
     
+    const toggleSelectAll = () => {
+      if (selectAll.value) {
+        selectedUsers.value = users.value.map(user => user.id);
+      } else {
+        selectedUsers.value = [];
+      }
+    };
+    
+    const openSendMessageModal = (userIds) => {
+      messageRecipients.value = userIds;
+      messageForm.value = { title: '', content: '' };
+      showMessageModal.value = true;
+    };
+    
+    const closeMessageModal = () => {
+      showMessageModal.value = false;
+      messageRecipients.value = [];
+      messageForm.value = { title: '', content: '' };
+    };
+    
+    const sendMessage = async () => {
+      if (messageRecipients.value.length === 0) return;
+      
+      try {
+        await notificationApi.send({
+          user_ids: messageRecipients.value,
+          title: messageForm.value.title,
+          content: messageForm.value.content
+        });
+        closeMessageModal();
+        alert('站内信发送成功');
+      } catch (err) {
+        console.error('发送站内信失败', err);
+        alert('发送站内信失败，请重试');
+      }
+    };
+    
     const formatDate = (dateString) => {
       if (!dateString) return '';
       const date = new Date(dateString);
@@ -226,8 +318,12 @@ export default {
       error,
       showEditModal,
       showDeleteModal,
+      showMessageModal,
       editingUser,
       deletingUser,
+      selectedUsers,
+      selectAll,
+      messageForm,
       updateUser,
       openEditModal,
       closeEditModal,
@@ -235,6 +331,10 @@ export default {
       confirmDelete,
       closeDeleteModal,
       deleteUser,
+      toggleSelectAll,
+      openSendMessageModal,
+      closeMessageModal,
+      sendMessage,
       formatDate
     };
   }
@@ -263,6 +363,26 @@ export default {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
+}
+
+.user-actions {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.btn-info {
+  background-color: #2196F3;
+  color: var(--text-color);
+}
+
+.btn-info:hover {
+  background-color: #1976D2;
+}
+
+.btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 .user-table {

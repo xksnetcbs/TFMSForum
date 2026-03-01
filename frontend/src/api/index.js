@@ -39,7 +39,8 @@ export const commentApi = {
 export const notificationApi = {
   getList: (params) => api.get('/notifications', { params }),
   markAsRead: (id) => api.post(`/notifications/${id}/read`),
-  markAllAsRead: () => api.post('/notifications/read_all')
+  markAllAsRead: () => api.post('/notifications/read_all'),
+  send: (data) => api.post('/notifications/send', data)
 };
 
 // 分类相关接口
